@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "root",
+    "password": "qwerty",
+    "database": "tic-tac-toe",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "appUser",
+    "password": "12345678",
+    "database": "tic-tac-toe",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
