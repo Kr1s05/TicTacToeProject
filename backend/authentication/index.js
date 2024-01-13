@@ -1,19 +1,29 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const { User } = require("../models");
+const { Op } = require("sequelize");
 
 passport.use(new LocalStrategy(authenticateUser));
 
 function authenticateUser(username, password, done) {
-  let user = User.findAll({
-    attributes: ["username", "password", "isActive"],
+  User.findOne({
+    attributes: ["username", "email", "password", "isActive"],
     where: {
-      username: username,
+      [Op.or]: [{ username: username }, { email: username }],
     },
-  }).then((user) => {
-    return user.isActive ? (user.password == password ? user : false) : false;
-  });
-  return done(null, user);
+  })
+    .then((user) => {
+      if (!user) return false;
+      if (!user.isActive) return false;
+      if (user.password != password) return false;
+      return user;
+    })
+    .then((user) => {
+      return done(null, user);
+    })
+    .catch((error) => {
+      return done(error);
+    });
 }
 
 passport.serializeUser((userObj, done) => {
@@ -26,9 +36,9 @@ passport.deserializeUser((userObj, done) => {
 
 checkAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
-    next();
+    return next();
   }
-  res.redirect("/login");
+  res.status(401).send("Unauthorized");
 };
 
 module.exports = { passport, checkAuthenticated };

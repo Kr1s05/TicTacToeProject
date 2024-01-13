@@ -20,14 +20,27 @@ app.use(passport.session());
 
 app.post(
   "/login",
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  })
+  (req, res, next) => {
+    if (req.body.email) req.body.username = req.body.email;
+    next();
+  },
+  passport.authenticate("local"),
+  (req, res) => {
+    res.json(req.user);
+  }
 );
 
-app.get("/check", checkAuthenticated, (req, res) => {
-  res.send("logged in");
+app.get("/user", checkAuthenticated, (req, res) => {
+  res.json(req.user);
+});
+
+app.post("/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
 });
 
 app.get("/", (req, res) => {
@@ -36,9 +49,10 @@ app.get("/", (req, res) => {
 
 const { User } = require("./models");
 
-db.sequelize.sync({ force: true }).then((req) => {
+db.sequelize.sync({ force: true }).then(() => {
   User.create({
     username: "testUser",
+    email: "testMail@mail.com",
     password: "testPass",
   });
 });
