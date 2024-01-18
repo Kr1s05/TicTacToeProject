@@ -37,11 +37,29 @@ passport.deserializeUser((userObj, done) => {
   done(null, userObj);
 });
 
-checkAuthenticated = (req, res, next) => {
+function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
   res.status(401).send("Unauthorized");
-};
+}
 
-module.exports = { passport, checkAuthenticated };
+function register(req, res, next) {
+  const { username, email, password } = req.body;
+  if (!password || password.length < 4 || password.length > 16) {
+    return res.status(400).send("password should be 4-16 characters long");
+  }
+  User.create({
+    username,
+    email,
+    password: bcrypt.hashSync(password, 10),
+  })
+    .then(() => {
+      return next();
+    })
+    .catch((error) => {
+      return res.status(409).send(error["errors"][0]["message"]);
+    });
+}
+
+module.exports = { passport, checkAuthenticated, register };

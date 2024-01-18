@@ -4,7 +4,7 @@ const db = require("./models");
 const app = express();
 const Session = require("express-session");
 const bcrypt = require("bcrypt");
-const { passport, checkAuthenticated } = require("./authentication");
+const { passport, checkAuthenticated, register } = require("./authentication");
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -44,12 +44,15 @@ app.post("/logout", function (req, res, next) {
   });
 });
 
+app.post("/register", register, passport.authenticate("local"), (req, res) => {
+  res.json(req.user);
+});
+
 app.get("/", (req, res) => {
   res.send("connected!");
 });
 
 const { User } = require("./models");
-
 db.sequelize.sync({ force: true }).then(() => {
   User.create({
     username: "testUser",
