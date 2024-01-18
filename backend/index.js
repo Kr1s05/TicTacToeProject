@@ -3,6 +3,7 @@ const cors = require("cors");
 const db = require("./models");
 const app = express();
 const Session = require("express-session");
+const bcrypt = require("bcrypt");
 const { passport, checkAuthenticated } = require("./authentication");
 
 app.use(cors());
@@ -53,7 +54,7 @@ db.sequelize.sync({ force: true }).then(() => {
   User.create({
     username: "testUser",
     email: "testMail@mail.com",
-    password: "testPass",
+    password: bcrypt.hashSync("testPass", 10),
   });
 });
 

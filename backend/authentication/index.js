@@ -1,4 +1,5 @@
 const passport = require("passport");
+const bcrypt = require("bcrypt");
 const LocalStrategy = require("passport-local").Strategy;
 const { User } = require("../models");
 const { Op } = require("sequelize");
@@ -15,8 +16,10 @@ function authenticateUser(username, password, done) {
     .then((user) => {
       if (!user) return false;
       if (!user.isActive) return false;
-      if (user.password != password) return false;
-      return user;
+      return bcrypt.compare(password, user.password).then(function (result) {
+        let { username, email } = user;
+        return result ? { username, email } : false;
+      });
     })
     .then((user) => {
       return done(null, user);
