@@ -2,12 +2,10 @@ import { NavBar } from "@/components/navbar";
 import { Outlet } from "react-router-dom";
 function SiteLayout() {
   return (
-    <>
+    <div className="absolute inset-0 flex flex-col">
       <NavBar />
-      <main>
-        <Outlet />
-      </main>
-    </>
+      <Outlet />
+    </div>
   );
 }
 
