@@ -1,5 +1,5 @@
-import { NavBar } from "@/components/navbar";
-import SocialFooter from "@/components/social-link-footer";
+import { NavBar } from "@/components/NavBar";
+import SocialFooter from "@/components/SocialFooter";
 import { Outlet } from "react-router-dom";
 function SiteLayout() {
   return (
