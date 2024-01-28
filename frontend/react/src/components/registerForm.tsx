@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 function RegisterForm() {
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
+    mode: "onChange",
     defaultValues: {
       username: "",
       email: "",
@@ -26,13 +27,6 @@ function RegisterForm() {
   });
 
   function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    if (form.getValues("password") !== form.getValues("repeatPassword")) {
-      form.setError("repeatPassword", {
-        type: "custom",
-        message: "Passwords don.t match.",
-      });
-      return;
-    }
     console.log(values);
   }
 
@@ -96,7 +90,6 @@ function RegisterForm() {
         />
         <Button
           type="submit"
-          onClick={() => form.clearErrors("repeatPassword")}
           className="w-1/2 mx-auto mt-2 font-bold text-lg col-span-2"
         >
           Register
