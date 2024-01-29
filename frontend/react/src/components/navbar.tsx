@@ -12,12 +12,17 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Menu } from "react-feather";
 import SiteIcon from "../assets/icon.svg?react";
+import { useContext } from "react";
+import { UserContext } from "./UserProvider";
 export function NavBar() {
+  const user = useContext(UserContext);
+
   return (
     <header
       className="flex h-20 w-full shrink-0 items-center px-4 md:px-6"
       role="navigation"
     >
+      <h1>{user !== "Unauthorized" ? user?.username : user}</h1>
       <Sheet>
         <SheetTrigger asChild>
           <Button
