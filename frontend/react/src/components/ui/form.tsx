@@ -1,3 +1,4 @@
+import "../../style/utility.css";
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
@@ -149,7 +150,17 @@ const FormMessage = React.forwardRef<
   const body = error ? String(error?.message) : children;
 
   if (!body) {
-    return null;
+    return (
+      <p
+        className={cn(
+          "noselect text-sm font-medium text-transparent",
+          className
+        )}
+        {...props}
+      >
+        Placeholder
+      </p>
+    );
   }
 
   return (

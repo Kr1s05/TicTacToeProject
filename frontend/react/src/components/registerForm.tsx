@@ -26,15 +26,15 @@ function RegisterForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof registerFormSchema>) {
+  const onSubmit = (values: z.infer<typeof registerFormSchema>) => {
     console.log(values);
-  }
+  };
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-2 gap-4 xl:w-1/3 md:w-1/2 w-10/12 border rounded-md border-white p-5 [&_div]:text-lg [&_label]:font-bold"
+        className="grid grid-cols-2 gap-x-4 xl:w-1/4 md:w-1/2 w-10/12 border rounded-md border-white p-5 [&_div]:text-lg [&_label]:font-bold"
       >
         <FormField
           control={form.control}
