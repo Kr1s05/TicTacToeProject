@@ -2,7 +2,7 @@ import loginFormSchema from "@/schemas/LoginFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-
+import { login, UserCredentials } from "@/api/userApi";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 function LoginForm() {
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: (user: UserCredentials) => login(user),
+    mutationKey: ["login"],
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user"]);
+    },
+  });
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     mode: "onChange",
@@ -28,7 +38,12 @@ function LoginForm() {
   const onSubmit: SubmitHandler<z.infer<typeof loginFormSchema>> = (
     values: z.infer<typeof loginFormSchema>
   ) => {
-    console.log(values);
+    const userData = {
+      username: values.username,
+      email: values.email,
+      password: values.password,
+    };
+    mutate(userData);
   };
 
   const [displayClass, setDisplayClass] = useState(false);

@@ -6,7 +6,13 @@ const Session = require("express-session");
 const bcrypt = require("bcrypt");
 const { passport, checkAuthenticated, register } = require("./authentication");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+    exposedHeaders: ["set-cookie"],
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
@@ -14,6 +20,10 @@ app.use(
     secret: "tic-tac-toe-cookie",
     resave: true,
     saveUninitialized: true,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+    },
   })
 );
 app.use(passport.initialize());
