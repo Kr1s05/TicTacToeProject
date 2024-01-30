@@ -2,7 +2,6 @@ import loginFormSchema from "@/schemas/LoginFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { login, UserCredentials } from "@/api/userApi";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,17 +14,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { useLogin } from "@/hooks/useUserQueries";
+import { User, UserCredentials } from "@/api/userApi";
 function LoginForm() {
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    mutationFn: (user: UserCredentials) => login(user),
-    mutationKey: ["login"],
-    onSuccess: () => {
-      queryClient.invalidateQueries(["user"]);
-    },
-  });
-
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     mode: "onChange",
@@ -35,15 +26,29 @@ function LoginForm() {
       password: "",
     },
   });
+  const onLogin = (values: User) => {
+    const error = {
+      type: "custom",
+      message: "Incorrect username or password.",
+    };
+    if ("message" in values) {
+      form.setError(
+        form.getValues("nameEmailSwitch") ? "email" : "username",
+        error
+      );
+      form.setError("password", error);
+    }
+  };
+  const { mutate: login } = useLogin(onLogin);
   const onSubmit: SubmitHandler<z.infer<typeof loginFormSchema>> = (
     values: z.infer<typeof loginFormSchema>
   ) => {
-    const userData = {
+    const userData: UserCredentials = {
       username: values.username,
       email: values.email,
       password: values.password,
     };
-    mutate(userData);
+    login(userData);
   };
 
   const [displayClass, setDisplayClass] = useState(false);

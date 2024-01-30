@@ -3,43 +3,60 @@ import axios from "axios";
 const client = axios.create({
   baseURL: "http://localhost:3000",
   withCredentials: true,
-  validateStatus: (status: number) => status == 200 || status == 401,
 });
 
 const getUser = async (): Promise<User> => {
-  const result = client
+  return client
     .get("/user")
-    .then(({ data, status }): User => {
-      if (status == 200) return data;
-      else if (status == 401) return "Unauthorized";
-      return null;
+    .then(({ data }): User => {
+      return data;
     })
     .catch((err) => {
-      console.log(err);
-      return null;
+      return { message: err };
     });
-  return result;
 };
 
-const login = async (user: UserCredentials): Promise<void> => {
-  client
+const login = async (user: UserCredentials): Promise<User> => {
+  return client
     .post("/login", { ...user })
-    .then(({ data, status }): User => {
-      if (status == 200) return data;
-      if (status == 401) return "Unauthorized";
-      return null;
+    .then(({ data }): User => {
+      return data;
     })
     .catch((err) => {
-      console.log(err);
-      return null;
+      return { message: err };
     });
 };
 
-export { getUser, login };
+const logout = () => {
+  return client.post("/logout", {}, { responseType: "text" });
+};
+
+const register = async (user: NewUser) => {
+  return client
+    .post("/register", { ...user })
+    .then(({ data }): User => {
+      if (data.path == "username")
+        return { message: "Username is already taken.", path: "username" };
+      if (data.path == "email")
+        return { message: "Email is already taken.", path: "email" };
+      return data;
+    })
+    .catch((err): User => {
+      return { message: err };
+    });
+};
+
+export { getUser, login, logout, register };
 
 export type UserCredentials = {
   username: string | "";
   email: string | "";
+  password: string;
+};
+
+export type NewUser = {
+  username: string;
+  email: string;
   password: string;
 };
 
@@ -48,5 +65,4 @@ export type User =
       username: string;
       email: string;
     }
-  | "Unauthorized"
-  | null;
+  | { message: string; path?: "email" | "username" };

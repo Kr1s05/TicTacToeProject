@@ -22,7 +22,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      sameSite: "None",
+      sameSite: "strict",
     },
   })
 );
@@ -35,11 +35,15 @@ app.post(
     if (req.body.email) req.body.username = req.body.email;
     next();
   },
-  passport.authenticate("local"),
-  (req, res) => {
-    res.json(req.user);
-  }
+  passport.authenticate("local", {
+    failureRedirect: "/unauthorized",
+    successRedirect: "/user",
+  })
 );
+
+app.get("/unauthorized", (req, res) => {
+  res.json({ message: "Unauthorized" });
+});
 
 app.get("/user", checkAuthenticated, (req, res) => {
   res.json(req.user);
@@ -50,7 +54,7 @@ app.post("/logout", function (req, res, next) {
     if (err) {
       return next(err);
     }
-    res.redirect("/");
+    res.send();
   });
 });
 

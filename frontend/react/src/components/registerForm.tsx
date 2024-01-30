@@ -13,6 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { NewUser, User } from "@/api/userApi";
+import { useRegister } from "@/hooks/useUserQueries";
 
 function RegisterForm() {
   const form = useForm<z.infer<typeof registerFormSchema>>({
@@ -26,8 +28,22 @@ function RegisterForm() {
     },
   });
 
+  const onRegister = (data: User) => {
+    console.log(JSON.stringify(data));
+    if ("message" in data && data.path) {
+      form.setError(data.path, { type: "custom", message: data.message });
+    }
+  };
+
+  const { mutate: register } = useRegister(onRegister);
+
   const onSubmit = (values: z.infer<typeof registerFormSchema>) => {
-    console.log(values);
+    const User: NewUser = {
+      username: values.username,
+      email: values.email,
+      password: values.password,
+    };
+    register(User);
   };
 
   return (

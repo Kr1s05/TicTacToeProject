@@ -41,14 +41,16 @@ function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(401).send("Unauthorized");
+  res.send("Unauthorized");
 }
 
 async function register(req, res, next) {
   const { username, email, password } = req.body;
   const passwordHash = await bcrypt.hash(password, 10);
   if (!password || password.length < 4 || password.length > 16) {
-    return res.status(400).send("password should be 4-16 characters long");
+    return res
+      .status(400)
+      .json({ message: "password should be 4-16 characters long" });
   }
   User.create({
     username,
@@ -59,7 +61,11 @@ async function register(req, res, next) {
       return next();
     })
     .catch((error) => {
-      return res.status(409).send(error["errors"][0]["message"]);
+      console.log(error["errors"][0]["path"]);
+      return res.json({
+        error: error["errors"][0]["message"],
+        path: error["errors"][0]["path"],
+      });
     });
 }
 
