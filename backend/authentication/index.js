@@ -41,7 +41,7 @@ function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.send("Unauthorized");
+  res.json({ message: "Unauthorized" });
 }
 
 async function register(req, res, next) {

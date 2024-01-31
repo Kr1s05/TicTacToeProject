@@ -10,6 +10,7 @@ import {
   NavigationMenuList,
   NavigationMenu,
 } from "@/components/ui/navigation-menu";
+import { UserNav } from "./UserNav";
 import { Menu } from "react-feather";
 import SiteIcon from "../assets/icon.svg?react";
 import { useContext } from "react";
@@ -95,14 +96,22 @@ export function NavBar() {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className="ml-auto flex gap-2">
-        <Link to={"/login"}>
-          <Button variant="outline">Login</Button>
-        </Link>
-        <Link to={"/register"}>
-          <Button>Register</Button>
-        </Link>
-      </div>
+      {user ? (
+        !("message" in user) ? (
+          <UserNav logoutCallback={logout} />
+        ) : (
+          <div className="ml-auto flex gap-2">
+            <Link to={"/login"}>
+              <Button variant="outline">Login</Button>
+            </Link>
+            <Link to={"/register"}>
+              <Button>Register</Button>
+            </Link>
+          </div>
+        )
+      ) : (
+        ""
+      )}
     </header>
   );
 }
