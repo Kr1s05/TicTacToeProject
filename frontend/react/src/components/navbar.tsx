@@ -19,6 +19,7 @@ import { useLogout } from "../hooks/useUserQueries";
 export function NavBar() {
   const user = useContext(UserContext);
   const logout = useLogout();
+  const authenticated = user && !("message" in user);
   return (
     <header
       className="flex h-20 w-full shrink-0 items-center px-4 md:px-6"
@@ -96,11 +97,9 @@ export function NavBar() {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      {user ? (
-        !("message" in user) ? (
-          <UserNav logoutCallback={logout} />
-        ) : (
-          <div className="ml-auto flex gap-2">
+      <div className="w-40">
+        {!authenticated ? (
+          <div className="flex gap-2">
             <Link to={"/login"}>
               <Button variant="outline">Login</Button>
             </Link>
@@ -108,10 +107,14 @@ export function NavBar() {
               <Button>Register</Button>
             </Link>
           </div>
-        )
-      ) : (
-        ""
-      )}
+        ) : (
+          <UserNav
+            logoutCallback={logout}
+            username={user.username}
+            email={user.email}
+          />
+        )}
+      </div>
     </header>
   );
 }
