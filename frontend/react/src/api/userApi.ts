@@ -1,9 +1,4 @@
-import axios from "axios";
-
-const client = axios.create({
-  baseURL: "http://localhost:3000",
-  withCredentials: true,
-});
+import client from "./axiosClient";
 
 const getUser = async (): Promise<User> => {
   return client

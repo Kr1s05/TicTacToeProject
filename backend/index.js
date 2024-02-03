@@ -2,10 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./models");
 const app = express();
-const Session = require("express-session");
 const bcrypt = require("bcrypt");
-const { passport, checkAuthenticated, register } = require("./authentication");
-
+const { passport } = require("./authentication");
+const http = require("http");
+const sessionMiddleware = require("./middleware/sessionMiddleware");
+const server = http.createServer(app);
+const io = require("./socket").createServer(server);
+const { createRoom, getRooms } = require("./game/room")(io);
+const userRouter = require("./routing/userRouter");
 app.use(
   cors({
     origin: ["http://localhost:5173"],
@@ -15,55 +19,17 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(
-  Session({
-    secret: "tic-tac-toe-cookie",
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    },
-  })
-);
+app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.post(
-  "/login",
-  (req, res, next) => {
-    if (req.body.email) req.body.username = req.body.email;
-    next();
-  },
-  passport.authenticate("local", {
-    failureRedirect: "/unauthorized",
-    successRedirect: "/user",
-  })
-);
-
-app.get("/unauthorized", (req, res) => {
-  res.json({ message: "Unauthorized" });
-});
-
-app.get("/user", checkAuthenticated, (req, res) => {
-  res.json(req.user);
-});
-
-app.post("/logout", function (req, res, next) {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.send();
-  });
-});
-
-app.post("/register", register, passport.authenticate("local"), (req, res) => {
-  res.json(req.user);
-});
+app.use(userRouter);
 
 app.get("/", (req, res) => {
   res.send("connected!");
+});
+
+app.get("/rooms", (req, res) => {
+  res.json(getRooms());
 });
 
 const { User } = require("./models");
@@ -75,6 +41,6 @@ db.sequelize.sync({ force: true }).then(() => {
   });
 });
 
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log("server started on port 3000");
 });
