@@ -1,9 +1,15 @@
-const router = require("express").Router();
-const { passport, checkAuthenticated, register } = require("../authentication");
+import { Router } from "express";
+import {
+  checkAuthenticated,
+  passport,
+  register,
+} from "@/authentication/passportConfig";
+import { getIo } from "@/socket/socket";
 
+export const router = Router();
 router.post(
   "/login",
-  (req, res, next) => {
+  (req, _res, next) => {
     if (req.body.email) req.body.username = req.body.email;
     next();
   },
@@ -13,7 +19,7 @@ router.post(
   })
 );
 
-router.get("/unauthorized", (req, res) => {
+router.get("/unauthorized", (_req, res) => {
   res.json({ message: "Unauthorized" });
 });
 
@@ -26,7 +32,12 @@ router.post("/logout", function (req, res, next) {
     if (err) {
       return next(err);
     }
-    res.send();
+    const sessionId = req.session.id;
+    req.session.destroy(() => {
+      // disconnect all Socket.IO connections linked to this session ID
+      getIo().to(`session:${sessionId}`).disconnectSockets();
+      res.status(204).end();
+    });
   });
 });
 
@@ -38,5 +49,3 @@ router.post(
     res.json(req.user);
   }
 );
-
-module.exports = router;

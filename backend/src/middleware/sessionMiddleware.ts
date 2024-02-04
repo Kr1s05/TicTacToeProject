@@ -1,5 +1,5 @@
-const Session = require("express-session");
-const sessionMiddleware = Session({
+import session from "express-session";
+export default session({
   secret: "tic-tac-toe-cookie",
   resave: true,
   saveUninitialized: true,
@@ -8,5 +8,3 @@ const sessionMiddleware = Session({
     sameSite: "strict",
   },
 });
-
-module.exports = sessionMiddleware;

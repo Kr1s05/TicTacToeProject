@@ -1,23 +1,28 @@
 import { getRooms } from "@/api/roomApi";
 import { UserContext } from "@/components/UserProvider";
 import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { io } from "socket.io-client";
 function RoomPage() {
-  const user = useContext(UserContext);
-  const roomList = useQuery({
-    queryKey: ["rooms"],
-    queryFn: getRooms,
-  });
-  if (!user || "message" in user) return "loading";
-  const socket = io("ws://localhost:3000/", { autoConnect: false });
-  socket.auth = { username: user.username };
-  socket.connect();
-  socket.onAny((event, ...args) => {
-    console.log(event, args);
-  });
-  console.log(roomList.data);
-  return <>{JSON.stringify(roomList.data)}</>;
+  // const roomList = useQuery({
+  //   queryKey: ["rooms"],
+  //   queryFn: getRooms,
+  // });
+
+  useEffect(() => {
+    const socket = io("ws://localhost:3000/", { withCredentials: true });
+    socket.onAny((event, ...args) => {
+      console.log(event, args);
+    });
+    // This effect runs once when the component is mounted
+    socket.emit("hello");
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+  return <></>;
 }
 
 export default RoomPage;
