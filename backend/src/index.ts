@@ -9,8 +9,7 @@ import { createServer } from "@/socket/socket";
 
 const app = Express();
 const server = http.createServer(app);
-const io = createServer(server);
-
+createServer(server);
 server.listen(3000, () => {
   console.log("server started on port 3000");
 });
@@ -29,7 +28,3 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(userRouter);
-
-io.on("connection", (socket) => {
-  console.log(socket.request.user);
-});

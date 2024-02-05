@@ -18,6 +18,9 @@ function setup() {
       }
     })
   );
+  io.on("connection", (socket) => {
+    socket.data.username = socket.request.user.username;
+  });
 }
 
 export const createServer = (

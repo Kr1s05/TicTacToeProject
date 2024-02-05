@@ -5,8 +5,8 @@
   "source": "./src/index.ts",
   "type": "module",
   "scripts": {
-    "build":"tsc",
-    "dev":"tsx watch src",
+    "build": "tsc",
+    "dev": "tsx watch src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,7 +24,6 @@
     "sequelize": "^6.36.0",
     "sequelize-typescript": "^2.1.6",
     "socket.io": "^4.7.4",
-    "uuid": "^9.0.1",
     "validator": "^13.11.0"
   },
   "devDependencies": {
