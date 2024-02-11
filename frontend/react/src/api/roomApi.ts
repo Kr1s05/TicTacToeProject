@@ -1,14 +1,20 @@
 import client from "./axiosClient";
 
-const getRooms = async (): Promise<[{ roomId: string; roomName: string }]> => {
+const getRooms = async (): Promise<Array<roomData>> => {
   return client
     .get("/rooms")
     .then(({ data }) => {
       return data;
     })
     .catch((err) => {
-      return { message: err };
+      throw new Error(err);
     });
+};
+
+export type roomData = {
+  id: string;
+  player: string;
+  name: string;
 };
 
 export { getRooms };

@@ -3,6 +3,7 @@ import { onlyForHandshake } from "@/middleware/socketMiddleware";
 import { passport } from "@/authentication/passportConfig";
 import sessionMiddleware from "@/middleware/sessionMiddleware";
 import { Server } from "socket.io";
+import { setup as roomSetup } from "@/game/room/gameRoom";
 let server, io: Server;
 
 function setup() {
@@ -22,6 +23,9 @@ function setup() {
     socket.data.username = socket.request.user.username;
   });
 }
+export const getIo = (): Server => {
+  return io;
+};
 
 export const createServer = (
   serverInstance: http.Server<
@@ -34,8 +38,6 @@ export const createServer = (
     cors: { origin: ["http://localhost:5173"], credentials: true },
   });
   setup();
-  return io;
-};
-export const getIo = (): Server => {
+  roomSetup(io);
   return io;
 };

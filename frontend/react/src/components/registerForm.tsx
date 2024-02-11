@@ -29,7 +29,6 @@ function RegisterForm() {
   });
 
   const onRegister = (data: User) => {
-    console.log(JSON.stringify(data));
     if ("message" in data && data.path) {
       form.setError(data.path, { type: "custom", message: data.message });
     }

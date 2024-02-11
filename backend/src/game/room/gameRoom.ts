@@ -1,11 +1,19 @@
 import { randomUUID } from "crypto";
-import { Socket } from "socket.io";
-import { getIo } from "@/socket/socket";
+import { Server, Socket } from "socket.io";
+import { saveRoomToSession, setupRoomListeners } from "./roomSocket";
 
 const rooms: Array<Room> = [];
-const io = getIo();
+let io: Server;
+
+function setup(ioInstance: Server) {
+  io = ioInstance;
+  io.on("connection", (socket) => {
+    setupRoomListeners(socket);
+  });
+}
 
 function createRoom(player: User) {
+  if (player.socket.data.room) return;
   const room: Room = {
     roomId: randomUUID(),
     players: {
@@ -19,12 +27,13 @@ function createRoom(player: User) {
   joinRoom(room, player);
   io.emit("addRoom", {
     id: room.roomId,
-    player1: player,
+    player: player.username,
     name: player.username + "'s room",
   });
 }
 
 function joinRoom(room: Room, player: User) {
+  if (player.socket.data.room) return;
   if (room.players.player1 != player) {
     if (!room.isWaiting) throw new Error("Room is full.");
     room.players.player2 = player;
@@ -33,6 +42,7 @@ function joinRoom(room: Room, player: User) {
   }
   player.socket.data.room = room.roomId;
   player.socket.join(room.roomId);
+  saveRoomToSession(player.socket);
   player.socket.emit("joined", { id: room.roomId });
 }
 
@@ -53,7 +63,7 @@ function getDisplayRooms() {
     .map((obj) => {
       return {
         id: obj.roomId,
-        player1: obj.players.player1,
+        player: obj.players.player1.username,
         name: obj.players.player1.username + "'s room",
       };
     });
@@ -74,6 +84,7 @@ function removeRoom(room: Room) {
 function leaveRoom(room: Room, player: User) {
   player.socket.data.room = "";
   player.socket.leave(room.roomId);
+  saveRoomToSession(player.socket);
   if (!room.isWaiting) {
     player.socket
       .to(room.roomId)
@@ -108,4 +119,11 @@ type User = {
 };
 type boardSpace = "x" | "o" | undefined;
 
-export { createRoom, joinRoomById, getDisplayRooms, leaveRoomById, rooms };
+export {
+  createRoom,
+  joinRoomById,
+  getDisplayRooms,
+  leaveRoomById,
+  rooms,
+  setup,
+};

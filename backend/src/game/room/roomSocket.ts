@@ -1,9 +1,19 @@
+import { Request } from "express";
 import { createRoom, joinRoomById, leaveRoomById } from "./gameRoom";
 import { Socket } from "socket.io";
 
 export function setupRoomListeners(socket: Socket) {
+  const req = socket.request as Request;
+  socket.data.room = req.session.room;
+  if (socket.data.room) {
+    if (!socket.rooms.has(socket.data.room)) socket.join(socket.data.room);
+    socket.emit("joined", { id: socket.data.room });
+  }
+  socket.on("disconnecting", () => {
+    saveRoomToSession(socket);
+  });
   socket.on("createRoom", (type: roomType) => {
-    if (type == "bot") {
+    if (type == "player") {
       createRoom({ username: socket.data.username, socket });
     }
   });
@@ -12,6 +22,14 @@ export function setupRoomListeners(socket: Socket) {
   });
   socket.on("leaveRoom", (roomId: string) => {
     leaveRoomById(roomId, { username: socket.data.username, socket });
+  });
+}
+
+export function saveRoomToSession(socket: Socket) {
+  const session = socket.request.session;
+  session.reload(() => {
+    session.room = socket.data.room;
+    session.save();
   });
 }
 

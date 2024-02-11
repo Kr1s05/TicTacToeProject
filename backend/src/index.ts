@@ -6,13 +6,11 @@ import sessionMiddleware from "./middleware/sessionMiddleware";
 import { passport } from "./authentication/passportConfig";
 import { router as userRouter } from "./routing/userRouter";
 import { createServer } from "@/socket/socket";
+import { router as roomRouter } from "@/game/room/roomRouter";
 
 const app = Express();
 const server = http.createServer(app);
-createServer(server);
-server.listen(3000, () => {
-  console.log("server started on port 3000");
-});
+// createServer(server);
 sync();
 
 app.use(
@@ -28,3 +26,8 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(userRouter);
+app.use("/rooms", roomRouter);
+
+server.listen(3000, () => {
+  console.log("server started on port 3000");
+});

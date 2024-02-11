@@ -5,7 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import UserProvider from "./components/UserProvider";
 import ProtectedComponent from "./components/ProtectedComponent";
-import RoomPage from "./pages/RoomPage";
+import GamePage from "./pages/GamePage";
 
 function App() {
   return (
@@ -27,9 +27,9 @@ function App() {
               }
             />
             <Route
-              path="rooms"
+              path="game"
               element={
-                <ProtectedComponent auth={true} element={<RoomPage />} />
+                <ProtectedComponent auth={true} element={<GamePage />} />
               }
             />
           </Route>
