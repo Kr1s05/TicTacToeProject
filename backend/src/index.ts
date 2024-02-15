@@ -10,7 +10,7 @@ import { router as roomRouter } from "@/game/room/roomRouter";
 
 const app = Express();
 const server = http.createServer(app);
-// createServer(server);
+createServer(server);
 sync();
 
 app.use(

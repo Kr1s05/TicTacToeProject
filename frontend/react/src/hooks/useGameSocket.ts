@@ -45,7 +45,7 @@ export function useRoomSocket() {
     });
 
     socket.on("joined", ({ id }) => {
-      console.log("joined room " + id);
+      setState((prevState) => ({ ...prevState, room: id }));
     });
 
     setState((prevState) => ({ ...prevState, socket }));
@@ -66,13 +66,16 @@ export function useRoomSocket() {
     setState({ ...state, error: "Error connecting to backend." });
 
   const createRoom = () => {
+    if (state.room) return;
     state.socket.emit("createRoom", "player");
   };
   const joinRoom = (id: string) => {
+    if (state.room) return;
     state.socket.emit("joinRoom", id);
   };
 
   const leaveRoom = (roomId: string) => {
+    if (!state.room) return;
     state.socket.emit("leaveRoom", roomId);
   };
   return {
@@ -81,5 +84,6 @@ export function useRoomSocket() {
     joinRoom,
     leaveRoom,
     error: state.error,
+    room: state.room,
   };
 }

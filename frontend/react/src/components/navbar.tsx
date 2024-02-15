@@ -93,7 +93,7 @@ export function NavBar() {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className="w-40">
+      <div>
         {!authenticated ? (
           <div className="flex gap-2">
             <Link to={"/login"}>

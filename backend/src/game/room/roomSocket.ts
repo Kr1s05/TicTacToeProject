@@ -29,6 +29,7 @@ export function saveRoomToSession(socket: Socket) {
   const session = socket.request.session;
   session.reload(() => {
     session.room = socket.data.room;
+    session.index = socket.data.index;
     session.save();
   });
 }

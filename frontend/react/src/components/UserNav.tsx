@@ -17,8 +17,8 @@ export function UserNav(props: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="w-40">
-          <User className="ml-auto" size={36} />
+        <div>
+          <User size={36} />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
