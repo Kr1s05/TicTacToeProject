@@ -50,7 +50,7 @@ export function joinRoom(room: Room, player: User) {
   player.socket.join(room.roomId);
   saveRoomToSession(player.socket);
   setGameListeners(player.socket);
-  player.socket.emit("joined", { id: room.roomId });
+  player.socket.emit("joined", { id: room.roomId, started: !room.isWaiting });
 }
 
 export function joinRoomById(roomId: string, player: User) {

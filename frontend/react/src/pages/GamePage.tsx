@@ -1,7 +1,7 @@
 import GameBoard from "@/components/GameBoard";
 import RoomList from "@/components/RoomList";
 import { Button } from "@/components/ui/button";
-import { useRoomSocket } from "@/hooks/useGameSocket";
+import { useRoomSocket } from "@/hooks/useRoomSocket";
 function GamePage() {
   const { createRoom, roomList, joinRoom, error, room } = useRoomSocket();
 
