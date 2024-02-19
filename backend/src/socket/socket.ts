@@ -4,6 +4,7 @@ import { passport } from "@/authentication/passportConfig";
 import sessionMiddleware from "@/middleware/sessionMiddleware";
 import { Server } from "socket.io";
 import { setup as roomSetup } from "@/game/room/gameRoom";
+import { setup as gameSetup } from "@/game/game";
 let server, io: Server;
 
 function setup() {
@@ -39,5 +40,6 @@ export const createServer = (
   });
   setup();
   roomSetup(io);
+  gameSetup(io);
   return io;
 };

@@ -1,0 +1,3 @@
+! keep the turn order on server
+implement win/lose/draw message
+stop game when win/lose/draw occurs

@@ -16,7 +16,7 @@ export const config: Config = {
     username: "root",
     password: "qwerty",
     database: "tic-tac-toe",
-    host: "127.0.0.1",
+    host: process.env.DBHOST || "127.0.0.1",
     dialect: "mysql",
   },
   production: {

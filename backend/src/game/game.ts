@@ -16,6 +16,9 @@ export function makeMove(moveIndex: number, player: User) {
   }
   if (!isValidMove(moveIndex, room.board)) return;
   const move = player.username == room.players.player1.username ? "x" : "o";
+  if (room.turn != move) return;
+  room.board[moveIndex] = move;
+  room.turn = move == "x" ? "o" : "x";
   sendMove(moveIndex, move, room.roomId);
   const gameState = getGameState(room.board);
   switch (gameState) {

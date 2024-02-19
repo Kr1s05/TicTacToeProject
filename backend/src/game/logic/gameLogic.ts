@@ -1,5 +1,5 @@
 function hasMoves(board: Board) {
-  return board.includes(undefined);
+  return board.includes("");
 }
 
 export function isValidMove(move: number, board: Board) {
@@ -25,5 +25,5 @@ export function getGameState(board: Board) {
   return "draw";
 }
 
-export type Board = Array<"x" | "o" | undefined>;
+export type Board = Array<"x" | "o" | "">;
 export type GameState = "playing" | "draw" | "x" | "o";

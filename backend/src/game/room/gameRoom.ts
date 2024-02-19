@@ -20,10 +20,11 @@ export function createRoom(player: User) {
     roomId: randomUUID(),
     players: {
       player1: player,
-      player2: "waiting",
+      player2: player,
     },
-    board: new Array(9),
+    board: new Array(9).fill(""),
     isWaiting: true,
+    turn: "x",
   };
   rooms.push(room);
   joinRoom(room, player);
@@ -34,11 +35,41 @@ export function createRoom(player: User) {
   });
 }
 
+export function rejoin(player: User) {
+  updateRoomIndex(player);
+  setGameListeners(player.socket);
+  const room = rooms[player.socket.data.index];
+  const playerChar =
+    room.players.player1.username == player.username ? "x" : "o";
+  player.socket.join(room.roomId);
+  if (playerChar == "x")
+    room.players.player2.socket.emit("playerJoined", {
+      username: player.username,
+    });
+  else
+    room.players.player1.socket.emit("playerJoined", {
+      username: player.username,
+    });
+  player.socket.emit("joined", {
+    id: room.roomId,
+    started: !room.isWaiting,
+    board: room.board,
+    playerChar,
+    player2:
+      playerChar == "x"
+        ? room.players.player1.username
+        : room.players.player2.username,
+    turn: room.turn,
+  });
+}
+
 export function joinRoom(room: Room, player: User) {
+  let playerChar = "x";
   if (player.socket.data.room) return;
   if (room.players.player1 != player) {
     if (!room.isWaiting) throw new Error("Room is full.");
     room.players.player2 = player;
+    playerChar = "o";
     room.isWaiting = false;
     room.players.player1.socket.emit("playerJoined", {
       username: player.username,
@@ -50,7 +81,17 @@ export function joinRoom(room: Room, player: User) {
   player.socket.join(room.roomId);
   saveRoomToSession(player.socket);
   setGameListeners(player.socket);
-  player.socket.emit("joined", { id: room.roomId, started: !room.isWaiting });
+  player.socket.emit("joined", {
+    id: room.roomId,
+    started: !room.isWaiting,
+    board: room.board,
+    playerChar,
+    player2:
+      playerChar == "x"
+        ? room.players.player2.username
+        : room.players.player1.username,
+    turn: room.turn,
+  });
 }
 
 export function joinRoomById(roomId: string, player: User) {
@@ -76,8 +117,13 @@ export function getDisplayRooms() {
     });
 }
 
-export function leaveRoomById(roomId: string, player: User) {
-  const room = findById(roomId);
+export function leaveRoomById(player: User) {
+  if (!player.socket.data.room) return;
+  const room = rooms[player.socket.data.index];
+  if (!room || !room.roomId == player.socket.data.room) {
+    updateRoomIndex(player);
+    return leaveRoomById(player);
+  }
   leaveRoom(room, player);
 }
 
@@ -90,7 +136,6 @@ export function removeRoom(room: Room) {
 
 export function leaveRoom(room: Room, player: User) {
   player.socket.data.room = "";
-  player.socket.data.index = undefined;
   player.socket.leave(room.roomId);
   saveRoomToSession(player.socket);
   cleanGameListeners(player.socket);
@@ -99,28 +144,32 @@ export function leaveRoom(room: Room, player: User) {
       .to(room.roomId)
       .emit("playerLeft", player.username + " left.");
     room.isWaiting = true;
-    io.to(room.roomId).emit("playerLeft");
+    room.board = Array(9).fill("");
+    room.turn = "x";
+    if (room.players.player1.username == player.username) {
+      room.players.player1 = room.players.player2;
+      room.players.player1.socket.emit("switchPlayers");
+    }
     io.emit("addRoom", {
       id: room.roomId,
-      player1: player,
-      name: player.username + "'s room",
+      player1: room.players.player1.username,
+      name: room.players.player1.username + "'s room",
     });
-    if (room.players.player1 == player) {
-      room.players.player1 = room.players.player2;
-      room.players.player2 = "waiting";
-    }
+    io.to(room.roomId).emit("resetBoard");
   } else {
     removeRoom(room);
   }
 }
 
 export function updateRoomIndex(player: User) {
+  if (player.socket.data.room == rooms[player.socket.data.index]) return;
   const room = findById(player.socket.data.room);
   player.socket.data.index = rooms.indexOf(room);
 }
 
 export function resetRoom(room: Room) {
   room.board = new Array(9);
+  room.turn = "x";
   switchPlayers(room);
 }
 
@@ -134,10 +183,11 @@ export type Room = {
   roomId: string;
   players: {
     player1: User;
-    player2: User | "waiting";
+    player2: User;
   };
   board: Board;
   isWaiting: boolean;
+  turn: "x" | "o";
 };
 export type User = {
   username: string;

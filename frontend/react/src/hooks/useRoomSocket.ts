@@ -13,10 +13,28 @@ export function useRoomSocket() {
     roomList: Array<roomData>;
     room: string;
     started: boolean;
-    error?: string | undefined;
-  }>({ socket: Socket.prototype, roomList: [], room: "", started: false });
+    error?: string;
+    board: Array<string>;
+    playerChar: string;
+    player2: string;
+    turn: string;
+  }>({
+    socket: Socket.prototype,
+    roomList: [],
+    room: "",
+    started: false,
+    board: [],
+    playerChar: "",
+    player2: "",
+    turn: "",
+  });
   useEffect(() => {
     const socket = io("ws://localhost:3000/", { withCredentials: true });
+
+    socket.onAny((event, ...args) => {
+      console.log(`got ${event}`, ...args);
+    });
+
     socket.on("addRoom", (roomInfo: roomData) => {
       setState((prevState) => ({
         ...prevState,
@@ -45,11 +63,29 @@ export function useRoomSocket() {
       }));
     });
 
-    socket.on("joined", ({ id, started }) => {
-      setState((prevState) => ({ ...prevState, room: id, started: started }));
+    socket.on("joined", ({ id, started, board, playerChar, player2, turn }) => {
+      setState((prevState) => ({
+        ...prevState,
+        room: id,
+        started: started,
+        board: board,
+        playerChar: playerChar,
+        player2: player2,
+        turn,
+      }));
     });
-    socket.on("playerJoined", () => {
-      setState((prevState) => ({ ...prevState, started: true }));
+    socket.on("playerJoined", ({ username }) => {
+      setState((prevState) => ({
+        ...prevState,
+        started: true,
+        player2: username,
+      }));
+    });
+    socket.on("playerLeft", () => {
+      setState((prevState) => ({
+        ...prevState,
+        started: false,
+      }));
     });
 
     setState((prevState) => ({ ...prevState, socket }));
@@ -78,10 +114,12 @@ export function useRoomSocket() {
     state.socket.emit("joinRoom", id);
   };
 
-  const leaveRoom = (roomId: string) => {
+  const leaveRoom = () => {
     if (!state.room) return;
-    state.socket.emit("leaveRoom", roomId);
+    setState((prevState) => ({ ...prevState, room: "", player2: "" }));
+    state.socket.emit("leaveRoom");
   };
+
   return {
     createRoom,
     roomList: state.roomList,
@@ -90,5 +128,10 @@ export function useRoomSocket() {
     error: state.error,
     room: state.room,
     started: state.started,
+    socket: state.socket,
+    startBoard: state.board,
+    playerChar: state.playerChar,
+    player2: state.player2,
+    turn: state.turn,
   };
 }

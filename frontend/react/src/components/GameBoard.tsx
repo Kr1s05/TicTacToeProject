@@ -2,8 +2,9 @@ import { Button } from "./ui/button";
 import { Circle, X } from "./GameIcons";
 function GameBoard(props: {
   board: Array<string>;
-  moveFn: () => void;
+  moveFn: (index: number) => void;
   started: boolean;
+  myTurn: boolean;
 }) {
   return (
     <div className="grid grid-cols-3 grid-rows-3 w-fit self-center my-auto">
@@ -11,11 +12,15 @@ function GameBoard(props: {
         <Button
           key={index}
           variant={"ghost"}
-          onClick={props.moveFn}
-          disabled={!props.started}
+          onClick={() => {
+            props.moveFn(index);
+          }}
+          disabled={
+            !props.started || char == "x" || char == "o" || !props.myTurn
+          }
           className="size-32 aspect-square border border-white rounded-sm"
         >
-          {char ? char == "X" ? <X /> : <Circle /> : ""}
+          {char ? char == "x" ? <X /> : <Circle /> : ""}
         </Button>
       ))}
     </div>
