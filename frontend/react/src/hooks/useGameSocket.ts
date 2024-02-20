@@ -30,8 +30,8 @@ export function useGameSocket(
       myChar: playerChar,
       player2,
       turn,
-      message: playerChar == turn ? "Your turn." : player2 + "'s turn.",
     }));
+    setMessage();
   }, [startBoard, playerChar, player2, turn]);
 
   useEffect(() => {
@@ -40,14 +40,15 @@ export function useGameSocket(
         ...prevState,
         myChar: prevState.myChar == "x" ? "o" : "x",
       }));
+      setMessage();
     });
     socket.on("resetBoard", () => {
       setState((prevState) => ({
         ...prevState,
         board: Array(9).fill(""),
         turn: "x",
-        message: "",
       }));
+      setMessage();
     });
     socket.on(
       "move",
@@ -78,6 +79,18 @@ export function useGameSocket(
       }));
     });
   }, [socket]);
+
+  const setMessage = () => {
+    setState((prevState) => ({
+      ...prevState,
+      message:
+        prevState.player2 != ""
+          ? prevState.myChar == prevState.turn
+            ? "Your turn."
+            : prevState.player2 + "'s turn."
+          : "Waiting for other player.",
+    }));
+  };
 
   const moveFn = (index: number) => {
     socket.emit("makeMove", index);
