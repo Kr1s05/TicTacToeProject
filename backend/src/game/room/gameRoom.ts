@@ -19,8 +19,8 @@ export function createRoom(player: User) {
   const room: Room = {
     roomId: randomUUID(),
     players: {
-      player1: player,
-      player2: player,
+      player1: { ...player, connected: false },
+      player2: { username: "", socket: Socket.prototype, connected: false },
     },
     board: new Array(9).fill(""),
     isWaiting: true,
@@ -42,14 +42,19 @@ export function rejoin(player: User) {
   const playerChar =
     room.players.player1.username == player.username ? "x" : "o";
   player.socket.join(room.roomId);
-  if (playerChar == "x")
-    room.players.player2.socket.emit("playerJoined", {
-      username: player.username,
-    });
-  else
-    room.players.player1.socket.emit("playerJoined", {
-      username: player.username,
-    });
+  if (!room.isWaiting) {
+    if (playerChar == "x") {
+      room.players.player1.connected = true;
+      room.players.player2.socket.emit("playerJoined", {
+        username: player.username,
+      });
+    } else {
+      room.players.player2.connected = true;
+      room.players.player1.socket.emit("playerJoined", {
+        username: player.username,
+      });
+    }
+  }
   player.socket.emit("joined", {
     id: room.roomId,
     started: !room.isWaiting,
@@ -57,8 +62,8 @@ export function rejoin(player: User) {
     playerChar,
     player2:
       playerChar == "x"
-        ? room.players.player1.username
-        : room.players.player2.username,
+        ? room.players.player2.username
+        : room.players.player1.username,
     turn: room.turn,
   });
 }
@@ -66,15 +71,17 @@ export function rejoin(player: User) {
 export function joinRoom(room: Room, player: User) {
   let playerChar = "x";
   if (player.socket.data.room) return;
-  if (room.players.player1 != player) {
+  if (room.players.player1.username != player.username) {
     if (!room.isWaiting) throw new Error("Room is full.");
-    room.players.player2 = player;
+    room.players.player2 = { ...player, connected: true };
     playerChar = "o";
     room.isWaiting = false;
     room.players.player1.socket.emit("playerJoined", {
       username: player.username,
     });
     io.emit("removeRoom", room.roomId);
+  } else {
+    room.players.player1.connected = true;
   }
   player.socket.data.room = room.roomId;
   player.socket.data.index = rooms.indexOf(room);
@@ -131,6 +138,12 @@ export function removeRoom(room: Room) {
   const index = rooms.indexOf(room);
   if (index > -1) rooms.splice(index, 1);
   else throw new Error("room does not exist");
+  room.players.player1.socket.data.room = "";
+  saveRoomToSession(room.players.player1.socket);
+  if (!room.isWaiting) {
+    room.players.player2.socket.data.room = "";
+    saveRoomToSession(room.players.player2.socket);
+  }
   io.emit("removeRoom", room.roomId);
 }
 
@@ -150,13 +163,42 @@ export function leaveRoom(room: Room, player: User) {
       room.players.player1 = room.players.player2;
       room.players.player1.socket.emit("switchPlayers");
     }
+    room.players.player2 = {
+      username: "",
+      socket: Socket.prototype,
+      connected: false,
+    };
     io.emit("addRoom", {
       id: room.roomId,
-      player1: room.players.player1.username,
+      player: room.players.player1.username,
       name: room.players.player1.username + "'s room",
     });
     io.to(room.roomId).emit("resetBoard");
   } else {
+    removeRoom(room);
+  }
+}
+
+export function disconnectPlayer(player: User) {
+  if (!player.socket.data.room) return;
+  const room = rooms[player.socket.data.index];
+  if (
+    !room ||
+    (room.players.player1.username != player.username &&
+      room.players.player2.username != player.username)
+  ) {
+    updateRoomIndex(player);
+    return disconnectPlayer(player);
+  }
+  if (room.players.player1.username == player.username) {
+    room.players.player1.connected = false;
+  } else {
+    room.players.player2.connected = false;
+  }
+  if (
+    room.isWaiting ||
+    (!room.players.player1.connected && !room.players.player2.connected)
+  ) {
     removeRoom(room);
   }
 }
@@ -182,8 +224,8 @@ function switchPlayers(room: Room) {
 export type Room = {
   roomId: string;
   players: {
-    player1: User;
-    player2: User;
+    player1: User & { connected: boolean };
+    player2: User & { connected: boolean };
   };
   board: Board;
   isWaiting: boolean;

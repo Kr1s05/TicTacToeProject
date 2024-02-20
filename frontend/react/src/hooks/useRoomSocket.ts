@@ -85,6 +85,7 @@ export function useRoomSocket() {
       setState((prevState) => ({
         ...prevState,
         started: false,
+        player2: "",
       }));
     });
 

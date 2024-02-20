@@ -1,5 +1,11 @@
 import { Request } from "express";
-import { createRoom, joinRoomById, leaveRoomById, rejoin } from "./gameRoom";
+import {
+  createRoom,
+  disconnectPlayer,
+  joinRoomById,
+  leaveRoomById,
+  rejoin,
+} from "./gameRoom";
 import { Socket } from "socket.io";
 
 export function setupRoomListeners(socket: Socket) {
@@ -11,6 +17,7 @@ export function setupRoomListeners(socket: Socket) {
     }
   }
   socket.on("disconnecting", () => {
+    disconnectPlayer({ username: socket.data.username, socket });
     saveRoomToSession(socket);
   });
   socket.on("createRoom", (type: roomType) => {

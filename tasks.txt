@@ -1,3 +1,2 @@
-! keep the turn order on server
-implement win/lose/draw message
-stop game when win/lose/draw occurs
+move every message set to setMessage()
+keep the game state in frontend in state (win/playing/draw)
