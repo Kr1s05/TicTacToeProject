@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { User, rooms, updateRoomIndex } from "./room/gameRoom";
+import { User, getRoom } from "./room/gameRoom";
 import { getGameState, isValidMove } from "./logic/gameLogic";
 
 let io: Server;
@@ -9,11 +9,7 @@ export function setup(ioInstance: Server) {
 }
 
 export function makeMove(moveIndex: number, player: User) {
-  const room = rooms[player.socket.data.index];
-  if (room.roomId != player.socket.data.room) {
-    updateRoomIndex(player);
-    return makeMove(moveIndex, player);
-  }
+  const room = getRoom(player.socket.data.room);
   if (!isValidMove(moveIndex, room.board)) return;
   const move = player.username == room.players.player1.username ? "x" : "o";
   if (room.turn != move) return;

@@ -10,11 +10,8 @@ import { Socket } from "socket.io";
 
 export function setupRoomListeners(socket: Socket) {
   const req = socket.request as Request;
-  socket.data.room = req.session.room;
-  if (socket.data.room) {
-    if (!socket.rooms.has(socket.data.room)) {
-      rejoin({ username: socket.data.username, socket });
-    }
+  if (req.session.room) {
+    rejoin({ username: socket.data.username, socket }, req.session.room);
   }
   socket.on("disconnecting", () => {
     disconnectPlayer({ username: socket.data.username, socket });

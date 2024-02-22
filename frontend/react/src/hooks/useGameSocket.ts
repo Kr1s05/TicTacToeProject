@@ -13,16 +13,21 @@ export function useGameSocket(
     turn: string;
     myChar: string;
     message: string;
-    ended: boolean;
+    gameState: "win" | "loss" | "draw" | "play" | "wait";
     player2: string;
   }>({
     board: startBoard,
     turn,
     myChar: playerChar,
-    ended: false,
+    gameState: "wait",
     player2,
     message: "",
   });
+
+  useEffect(() => {
+    console.log(state);
+  });
+
   useEffect(() => {
     setState((prevState) => ({
       ...prevState,
@@ -36,6 +41,7 @@ export function useGameSocket(
     setState((prevState) => ({
       ...prevState,
       player2,
+      gameState: player2 ? "play" : "wait",
     }));
   }, [player2]);
 
@@ -51,6 +57,7 @@ export function useGameSocket(
         ...prevState,
         board: Array(9).fill(""),
         turn: "x",
+        gameState: "play",
       }));
     });
     socket.on(
@@ -60,49 +67,62 @@ export function useGameSocket(
           ...prevState,
           board: prevState.board.map((c, i) => (index == i ? player : c)),
           turn: player == "x" ? "o" : "x",
-          message:
-            (player == "x" ? "o" : "x") == prevState.myChar
-              ? "Your turn."
-              : prevState.player2 + "'s turn.",
+          // message:
+          //   (player == "x" ? "o" : "x") == prevState.myChar
+          //     ? "Your turn."
+          //     : prevState.player2 + "'s turn.",
         }));
       }
     );
     socket.on("win", ({ username }) => {
       setState((prevState) => ({
         ...prevState,
-        message: username + " wins!",
-        ended: true,
+        gameState: username == prevState.player2 ? "loss" : "win",
       }));
     });
     socket.on("draw", () => {
       setState((prevState) => ({
         ...prevState,
-        message: "Draw!",
-        ended: true,
+        gameState: "draw",
       }));
     });
   }, [socket]);
   useEffect(() => {
     setMessage();
-  }, [state.player2, state.myChar, state.turn]);
+  }, [state.player2, state.myChar, state.turn, state.gameState]);
   const setMessage = () => {
+    let message = "";
+    switch (state.gameState) {
+      case "win":
+        message = "You win!";
+        break;
+      case "loss":
+        message = state.player2 + " wins!";
+        break;
+      case "draw":
+        message = "Draw.";
+        break;
+      case "wait":
+        message = "Waiting for other player.";
+        break;
+      case "play":
+        message =
+          state.myChar == state.turn
+            ? "Your turn."
+            : state.player2 + "'s turn.";
+    }
     setState((prevState) => ({
       ...prevState,
-      message: prevState.player2
-        ? prevState.myChar == prevState.turn
-          ? "Your turn."
-          : prevState.player2 + "'s turn."
-        : "Waiting for other player.",
+      message,
     }));
   };
-  console.log(state.myChar, state.turn);
   const moveFn = (index: number) => {
     socket.emit("makeMove", index);
   };
   return {
     moveFn,
     board: state.board,
-    playing: state.myChar == state.turn && !state.ended,
+    playing: state.myChar == state.turn && state.gameState == "play",
     message: state.message,
   };
 }
