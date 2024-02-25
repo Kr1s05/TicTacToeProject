@@ -3,7 +3,6 @@ import { Circle, X } from "./GameIcons";
 function GameBoard(props: {
   board: Array<string>;
   moveFn: (index: number) => void;
-  started: boolean;
   myTurn: boolean;
 }) {
   return (
@@ -15,9 +14,7 @@ function GameBoard(props: {
           onClick={() => {
             props.moveFn(index);
           }}
-          disabled={
-            !props.started || char == "x" || char == "o" || !props.myTurn
-          }
+          disabled={char == "x" || char == "o" || !props.myTurn}
           className="size-32 aspect-square border border-white rounded-sm"
         >
           {char ? char == "x" ? <X /> : <Circle /> : ""}

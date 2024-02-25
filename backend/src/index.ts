@@ -7,6 +7,7 @@ import { passport } from "./authentication/passportConfig";
 import { router as userRouter } from "./routing/userRouter";
 import { createServer } from "@/socket/socket";
 import { router as roomRouter } from "@/game/room/roomRouter";
+import { setupMessaging } from "./amqp/messageQueue";
 
 const app = Express();
 const server = http.createServer(app);
@@ -31,3 +32,5 @@ app.use("/rooms", roomRouter);
 server.listen(3000, () => {
   console.log("server started on port 3000");
 });
+
+setupMessaging();

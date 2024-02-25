@@ -1,14 +1,14 @@
 import { Server } from "socket.io";
-import { User, getRoom } from "./room/gameRoom";
+import { User, getRoom, resetRoom } from "./room/gameRoom";
 import { getGameState, isValidMove } from "./logic/gameLogic";
-
+import { setTimeout } from "timers/promises";
 let io: Server;
 
 export function setup(ioInstance: Server) {
   io = ioInstance;
 }
 
-export function makeMove(moveIndex: number, player: User) {
+export async function makeMove(moveIndex: number, player: User) {
   const room = getRoom(player.socket.data.room);
   if (!isValidMove(moveIndex, room.board)) return;
   const move = player.username == room.players.player1.username ? "x" : "o";
@@ -18,6 +18,8 @@ export function makeMove(moveIndex: number, player: User) {
   sendMove(moveIndex, move, room.roomId);
   const gameState = getGameState(room.board);
   switch (gameState) {
+    case "playing":
+      return;
     case "x":
       sendWin(room.players.player1.username, room.roomId);
       break;
@@ -28,6 +30,8 @@ export function makeMove(moveIndex: number, player: User) {
       sendDraw(room.roomId);
       break;
   }
+  await setTimeout(3000);
+  resetRoom(room);
 }
 
 function sendMove(index: number, move: "x" | "o", roomId: string) {

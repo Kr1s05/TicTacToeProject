@@ -9,9 +9,9 @@ export function useGameSocket(
   turn: string
 ) {
   const [state, setState] = useState<{
-    board: Array<string>;
-    turn: string;
-    myChar: string;
+    // board: Array<string>;
+    // turn: string;
+    // myChar: string;
     message: string;
     gameState: "win" | "loss" | "draw" | "play" | "wait";
     player2: string;
@@ -67,10 +67,6 @@ export function useGameSocket(
           ...prevState,
           board: prevState.board.map((c, i) => (index == i ? player : c)),
           turn: player == "x" ? "o" : "x",
-          // message:
-          //   (player == "x" ? "o" : "x") == prevState.myChar
-          //     ? "Your turn."
-          //     : prevState.player2 + "'s turn.",
         }));
       }
     );

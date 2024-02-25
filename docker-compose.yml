@@ -1,23 +1,22 @@
 version: "3.8"
 services:
-  backend:
-    image: node:latest
-    container_name: backend-container
-    environment:
-      - CONFIG=development
-      - DBHOST=mysql-container
-    depends_on:
-      - mysql
-    ports: 
-      - 3000:3000
-    volumes: 
-      - ./backend:/files/backend
-    working_dir: /files/backend
-    command: npm run dev
-
+  
   frontend:
+    image: nginx:latest
+    container_name: fronted-production-container
+    environment:
+      - BACKENDHOST=127.0.0.1
+      - BACKENDPORT=3000
+    ports: 
+      - 5173:80
+    volumes: 
+      - ./frontend/react/dist:/usr/share/nginx/html
+    profiles:
+      - production
+
+  frontend-dev:
     image: node:latest
-    container_name: frontend-container
+    container_name: frontend-dev-container
     environment:
       - BACKENDHOST=127.0.0.1
       - BACKENDPORT=3000
@@ -27,6 +26,44 @@ services:
       - ./frontend/react:/files/frontend
     working_dir: /files/frontend
     command: npm run dev
+    profiles:
+      - dev
+
+  backend:
+    image: node:latest
+    container_name: backend-container
+    environment:
+      - CONFIG=development
+      - DBHOST=mysql-container
+      - MQUSER=kris
+      - MQPASS=wcar273
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+          condition: service_healthy
+    ports: 
+      - 3000:3000
+    volumes: 
+      - ./backend:/files/backend
+    working_dir: /files/backend
+    command: npm run dev
+  
+  rabbitmq:
+    build: ./rabbitmq
+    container_name: rabbitmq-container
+    environment:
+      - RABBITMQ_DEFAULT_USER=kris
+      - RABBITMQ_DEFAULT_PASS=wcar273
+    expose:
+      - 5672:5672
+    ports:
+      - 8083:15672
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   mysql:
     image: mysql:latest
@@ -39,6 +76,11 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 volumes:
   mysql-data:
     driver: local
