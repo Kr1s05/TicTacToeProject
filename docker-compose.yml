@@ -64,6 +64,11 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+    
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    
 
   mysql:
     image: mysql:latest
