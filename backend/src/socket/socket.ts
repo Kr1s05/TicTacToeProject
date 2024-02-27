@@ -1,14 +1,14 @@
 import http from "http";
 import { onlyForHandshake } from "@/middleware/socketMiddleware";
 import { passport } from "@/authentication/passportConfig";
-import sessionMiddleware from "@/middleware/sessionMiddleware";
+import { getSessionMiddleware } from "@/middleware/sessionMiddleware";
 import { Server } from "socket.io";
 import { setup as roomSetup } from "@/game/room/gameRoom";
 import { setup as gameSetup } from "@/game/game";
 let server, io: Server;
 
 function setup() {
-  io.engine.use(onlyForHandshake(sessionMiddleware));
+  io.engine.use(onlyForHandshake(getSessionMiddleware()));
   io.engine.use(onlyForHandshake(passport.session()));
   io.engine.use(
     onlyForHandshake((req, res, next) => {
