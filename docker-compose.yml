@@ -51,6 +51,20 @@ services:
     working_dir: /files/backend
     command: npm run dev
   
+  bot:
+    image: golang:latest
+    container_name: bot-container
+    depends_on:
+      rabbitmq:
+          condition: service_healthy
+    working_dir: /usr/src/app
+    environment:
+      - MQUSER=kris
+      - MQPASS=wcar273
+    volumes:
+      - ./bot/:/usr/src/app
+    command: go run ./src/Main.go
+  
   rabbitmq:
     build: ./rabbitmq
     container_name: rabbitmq-container
