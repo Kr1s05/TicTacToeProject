@@ -239,6 +239,7 @@ export type Room = {
   isWaiting: boolean;
   turn: "x" | "o";
 };
+
 export type User = {
   username: string;
   socket: Socket;

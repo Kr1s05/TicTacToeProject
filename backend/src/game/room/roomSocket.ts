@@ -20,6 +20,8 @@ export function setupRoomListeners(socket: Socket) {
   socket.on("createRoom", (type: roomType) => {
     if (type == "player") {
       createRoom({ username: socket.data.username, socket });
+    } else if (type == "bot") {
+      return;
     }
   });
   socket.on("joinRoom", (roomId: string) => {
