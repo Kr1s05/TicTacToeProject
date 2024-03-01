@@ -2,13 +2,15 @@ package main
 
 import (
 	"os"
+	"os/signal"
+	"syscall"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 
 	"encoding/json"
 )
 
-func main() {
+func main1() {
 	connection, errCon := amqp.Dial("amqp://" + os.Getenv("MQUSER") + ":" + os.Getenv("MQPASS") + "@rabbitmq:5672/")
 	fail(errCon, "Connection error")
 	defer connection.Close()
@@ -39,9 +41,9 @@ func main() {
 		}
 	}()
 
-	ch1 := make(chan int)
-	<-ch1
-
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT)
+	<-sigCh
 }
 
 func fail(err error, message string) {
@@ -53,7 +55,6 @@ func fail(err error, message string) {
 
 type gameState struct {
 	Id         string
-	Turn       string
 	Maximizing string
 	Board      []string
 }
