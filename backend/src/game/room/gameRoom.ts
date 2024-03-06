@@ -4,7 +4,8 @@ import { saveRoomToSession, setupRoomListeners } from "./roomSocket";
 import { randomUUID } from "crypto";
 import { cleanGameListeners, setGameListeners } from "../gameSocket";
 
-export const rooms: RoomList = {};
+const rooms: RoomList = {};
+const botRooms: BotRoomList = {};
 let io: Server;
 
 export function setup(ioInstance: Server) {
@@ -14,30 +15,44 @@ export function setup(ioInstance: Server) {
   });
 }
 
-export function getRoom(roomId: string) {
-  return rooms[roomId];
+export function getRoom(roomId: string): Room | BotRoom {
+  return rooms[roomId] || botRooms[roomId];
 }
 
 export function createRoom(player: User) {
-  if (player.socket.data.room) return;
-  const room: Room = {
-    roomId: randomUUID(),
-    players: {
-      player1: { ...player, connected: false, playerChar: "x" },
-      player2: {
-        username: "",
-        socket: Socket.prototype,
-        connected: false,
-        playerChar: "",
+  if (player.socket.data.room && player.socket.data.room != "bot") return;
+  if (player.socket.data.room == "bot") {
+    const room: BotRoom = {
+      roomId: randomUUID(),
+      players: {
+        player1: { ...player, playerChar: "x" },
+        player2: { username: "Bot" },
       },
-    },
-    board: new Array(9).fill(""),
-    isWaiting: true,
-    turn: "x",
-  };
-  rooms[room.roomId] = room;
-  joinRoom(room, player);
-  sendAddRoom(room);
+      board: new Array(9).fill(""),
+      turn: "x",
+    };
+    botRooms[room.roomId] = room;
+    joinBotRoom(room);
+  } else {
+    const room: Room = {
+      roomId: randomUUID(),
+      players: {
+        player1: { ...player, connected: false, playerChar: "x" },
+        player2: {
+          username: "",
+          socket: Socket.prototype,
+          connected: false,
+          playerChar: "",
+        },
+      },
+      board: new Array(9).fill(""),
+      isWaiting: true,
+      turn: "x",
+    };
+    rooms[room.roomId] = room;
+    joinRoom(room, player);
+    sendAddRoom(room);
+  }
 }
 
 export function joinRoomById(roomId: string, player: User) {
@@ -65,7 +80,9 @@ export function removeRoom(room: Room) {
 
 export function leaveRoomById(player: User) {
   if (!player.socket.data.room) return;
-  leaveRoom(rooms[player.socket.data.room], player);
+  if (player.socket.data.room in botRooms)
+    leaveBotRoom(botRooms[player.socket.data.room]);
+  else leaveRoom(rooms[player.socket.data.room], player);
 }
 
 export function rejoin(player: User, roomId: string) {
@@ -85,6 +102,10 @@ export function rejoin(player: User, roomId: string) {
 
 export function disconnectPlayer(player: User) {
   if (!player.socket.data.room) return;
+  if (player.socket.data.room in botRooms) {
+    leaveBotRoom(botRooms[player.socket.data.room]);
+    return;
+  }
   const room = rooms[player.socket.data.room];
   if (isPlayerOne(player.username, room)) {
     room.players.player1.connected = false;
@@ -98,7 +119,7 @@ export function disconnectPlayer(player: User) {
   }
 }
 
-export function resetRoom(room: Room) {
+export function resetRoom(room: Room | BotRoom) {
   resetBoard(room);
   switchPlayers(room);
 }
@@ -124,6 +145,17 @@ function leaveRoom(room: Room, player: User) {
   }
 }
 
+function leaveBotRoom(room: BotRoom) {
+  removeSocketRoom(room.players.player1.socket);
+  cleanGameListeners(room.players.player1.socket);
+  delete botRooms[room.roomId];
+}
+
+function joinBotRoom(room: BotRoom) {
+  setSocketRoom(room.players.player1.socket, room.roomId);
+  sendJoinBotRoom(room);
+  setGameListeners(room.players.player1.socket);
+}
 function joinRoom(room: Room, player: User) {
   if (player.socket.data.room) return;
   if (!isPlayerOne(player.username, room)) {
@@ -156,20 +188,26 @@ function isPlayerOne(username: string, room: Room) {
   return room.players.player1.username == username;
 }
 
-function resetBoard(room: Room) {
+function resetBoard(room: Room | BotRoom) {
   room.turn = "x";
   room.board = Array(9).fill("");
   sendResetBoard(room.roomId);
 }
 
-function switchPlayers(room: Room) {
-  const temp = room.players.player1;
-  room.players.player1 = room.players.player2;
-  room.players.player2 = temp;
-  room.players.player1.playerChar = "x";
-  room.players.player2.playerChar = "o";
-  sendSwitchPlayers(room.players.player1.socket);
-  sendSwitchPlayers(room.players.player2.socket);
+function switchPlayers(room: Room | BotRoom) {
+  if ("isWaiting" in room) {
+    const temp = room.players.player1;
+    room.players.player1 = room.players.player2;
+    room.players.player2 = temp;
+    room.players.player1.playerChar = "x";
+    room.players.player2.playerChar = "o";
+    sendSwitchPlayers(room.players.player1.socket);
+    sendSwitchPlayers(room.players.player2.socket);
+  } else {
+    room.players.player1.playerChar =
+      room.players.player1.playerChar == "x" ? "o" : "x";
+    sendSwitchPlayers(room.players.player1.socket);
+  }
 }
 
 function removePlayer2(room: Room) {
@@ -179,6 +217,17 @@ function removePlayer2(room: Room) {
     connected: false,
     playerChar: "",
   };
+}
+
+function sendJoinBotRoom(room: BotRoom) {
+  room.players.player1.socket.emit("joined", {
+    id: room.roomId,
+    started: true,
+    board: room.board,
+    playerChar: room.players.player1.playerChar,
+    player2: "Bot",
+    turn: room.turn,
+  });
 }
 
 function sendJoinRoom(socket: Socket, room: Room) {
@@ -228,6 +277,17 @@ function sendAddRoom(room: Room) {
 }
 
 type RoomList = { [key: string]: Room };
+type BotRoomList = { [key: string]: BotRoom };
+
+export type BotRoom = {
+  roomId: string;
+  players: {
+    player1: User & { playerChar: string };
+    player2: { username: "Bot" };
+  };
+  board: Board;
+  turn: "x" | "o";
+};
 
 export type Room = {
   roomId: string;

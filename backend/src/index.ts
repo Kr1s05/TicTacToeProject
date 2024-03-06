@@ -17,6 +17,7 @@ const redisClient = await createClient({
 const app = Express();
 const server = http.createServer(app);
 sync();
+await setupMessaging();
 
 app.use(
   cors({
@@ -38,5 +39,3 @@ server.listen(3000, () => {
 });
 
 createServer(server);
-
-setupMessaging();

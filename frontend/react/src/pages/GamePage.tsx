@@ -1,7 +1,7 @@
 import GameBoard from "@/components/GameBoard";
 import RoomList from "@/components/RoomList";
 import { Button } from "@/components/ui/button";
-import { useRoomSocket } from "@/hooks/useRoomSocket";
+import { useRoomSocket } from "@/hooks/useGameSocket";
 function GamePage() {
   const {
     createRoom,
@@ -23,12 +23,20 @@ function GamePage() {
         ) : roomList ? (
           <>
             <RoomList rooms={roomList} joinFn={joinRoom} />
-            <Button
-              className="w-fit self-center m-4 text-xl"
-              onClick={createRoom}
-            >
-              Create Room!
-            </Button>
+            <div className="flex flex-row justify-center">
+              <Button
+                className="w-40 m-4 text-xl self-center"
+                onClick={() => createRoom("player")}
+              >
+                Create Room!
+              </Button>
+              <Button
+                className="w-40 m-4 text-xl"
+                onClick={() => createRoom("bot")}
+              >
+                Play vs Bot!
+              </Button>
+            </div>
           </>
         ) : (
           "Loading..."

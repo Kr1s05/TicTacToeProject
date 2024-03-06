@@ -4,10 +4,10 @@ import (
 	"math"
 )
 
-func minimax(board [9]string, maximizing bool, alpha int, beta int) int {
+func minimax(board [9]string, maximizing bool, alpha int, beta int, depth int) int {
 	playing, score := getGameState(board)
 	if !playing {
-		return score
+		return score * (10 - depth)
 	}
 	if maximizing {
 		maxValue := math.MinInt
@@ -16,7 +16,7 @@ func minimax(board [9]string, maximizing bool, alpha int, beta int) int {
 				continue
 			}
 			board[i] = "x"
-			currentScore := minimax(board, false, alpha, beta)
+			currentScore := minimax(board, false, alpha, beta, depth+1)
 			board[i] = ""
 			maxValue = max(maxValue, currentScore)
 			alpha = max(alpha, currentScore)
@@ -32,7 +32,7 @@ func minimax(board [9]string, maximizing bool, alpha int, beta int) int {
 				continue
 			}
 			board[i] = "o"
-			currentScore := minimax(board, true, alpha, beta)
+			currentScore := minimax(board, true, alpha, beta, depth+1)
 			board[i] = ""
 			minValue = min(minValue, currentScore)
 			beta = min(beta, currentScore)
@@ -53,7 +53,7 @@ func findBestMove(board [9]string, turn string) int {
 				continue
 			}
 			board[i] = turn
-			moveScore := minimax(board, false, math.MinInt, math.MaxInt)
+			moveScore := minimax(board, false, math.MinInt, math.MaxInt, 0)
 			board[i] = ""
 			if moveScore > bestScore {
 				bestScore = moveScore
@@ -67,7 +67,7 @@ func findBestMove(board [9]string, turn string) int {
 				continue
 			}
 			board[i] = turn
-			moveScore := minimax(board, true, math.MinInt, math.MaxInt)
+			moveScore := minimax(board, true, math.MinInt, math.MaxInt, 0)
 			board[i] = ""
 			if moveScore < bestScore {
 				bestScore = moveScore

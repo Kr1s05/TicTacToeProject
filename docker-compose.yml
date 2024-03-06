@@ -63,7 +63,7 @@ services:
       - MQPASS=wcar273
     volumes:
       - ./bot/:/usr/src/app
-    command: go run ./src/Main.go
+    command: go run .
   
   rabbitmq:
     build: ./rabbitmq
