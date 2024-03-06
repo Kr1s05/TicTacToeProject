@@ -15,17 +15,17 @@ export const sequelize = new Sequelize({
 
 sequelize.addModels([User]);
 
-export const sync = () => {
-  sequelize.sync({ force: true }).then(() => {
-    User.create({
-      username: "testUser",
-      email: "testMail@mail.com",
-      password: bcrypt.hashSync("testPass", 10),
-    });
-    User.create({
-      username: "testUser2",
-      email: "testMail2@mail.com",
-      password: bcrypt.hashSync("testPass", 10),
-    });
+export const sync = async () => {
+  await sequelize.sync({ force: false }).then(() => {
+    // User.create({
+    //   username: "testUser",
+    //   email: "testMail@mail.com",
+    //   password: bcrypt.hashSync("testPass", 10),
+    // });
+    // User.create({
+    //   username: "testUser2",
+    //   email: "testMail2@mail.com",
+    //   password: bcrypt.hashSync("testPass", 10),
+    // });
   });
 };

@@ -16,7 +16,7 @@ const redisClient = await createClient({
 
 const app = Express();
 const server = http.createServer(app);
-sync();
+await sync();
 await setupMessaging();
 
 app.use(
