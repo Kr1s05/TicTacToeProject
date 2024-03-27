@@ -3,7 +3,7 @@ import { User, getRoom, resetRoom } from "./room/gameRoom";
 import { getGameState, isValidMove } from "./logic/gameLogic";
 import { setTimeout } from "timers/promises";
 import { BotMessage, setupBotMessaging } from "./botMessaging";
-import { incrementScore } from "./incrementScores";
+import { incrementScore } from "../scoreboard/incrementScores";
 let io: Server;
 export let sendBotMove: (msg: BotMessage) => void;
 export async function setup(ioInstance: Server) {

@@ -6,9 +6,9 @@ function RoomList(props: {
   joinFn: (id: string) => void;
 }) {
   return (
-    <>
+    <div className="grow flex flex-col justify-center">
       <h1 className="text-3xl font-bold text-center m-2">Rooms:</h1>
-      <ScrollArea className="w-fit md:w-2/3 lg:w-1/2 self-center grow">
+      <ScrollArea className="w-fit md:w-2/3 self-center grow">
         <div className="p-4 flex flex-col gap-2">
           {props.rooms.length != 0 ? (
             props.rooms.map(({ id, name, player }) => (
@@ -21,11 +21,13 @@ function RoomList(props: {
               />
             ))
           ) : (
-            <h4 className="self-center text-2xl">No rooms available now.</h4>
+            <h4 className="self-center text-2xl text-center">
+              No rooms available now.
+            </h4>
           )}
         </div>
       </ScrollArea>
-    </>
+    </div>
   );
 }
 

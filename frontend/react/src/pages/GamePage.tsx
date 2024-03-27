@@ -1,4 +1,6 @@
+import BotScoreBoard from "@/components/BotScoreBoard";
 import GameBoard from "@/components/GameBoard";
+import PlayerScoreBoard from "@/components/PlayerScoreBoard";
 import RoomList from "@/components/RoomList";
 import { Button } from "@/components/ui/button";
 import { useRoomSocket } from "@/hooks/useGameSocket";
@@ -17,27 +19,33 @@ function GamePage() {
   } = useRoomSocket();
   if (!room)
     return (
-      <main className="flex flex-col h-[calc(100vh-80px-56px)]">
+      <main className="flex flex-col h-[88vh]">
         {error ? (
           error
         ) : roomList ? (
-          <>
-            <RoomList rooms={roomList} joinFn={joinRoom} />
-            <div className="flex flex-row justify-center">
-              <Button
-                className="w-40 m-4 text-xl self-center"
-                onClick={() => createRoom("player")}
-              >
-                Create Room!
-              </Button>
-              <Button
-                className="w-40 m-4 text-xl"
-                onClick={() => createRoom("bot")}
-              >
-                Play vs Bot!
-              </Button>
+          <div className="flex flex-row h-full justify-between p-16 relative">
+            <div className="flex flex-col grow">
+              <RoomList rooms={roomList} joinFn={joinRoom} />
+              <div className="flex flex-row justify-center">
+                <Button
+                  className="w-40 m-4 text-xl self-center"
+                  onClick={() => createRoom("player")}
+                >
+                  Create Room!
+                </Button>
+                <Button
+                  className="w-40 m-4 text-xl"
+                  onClick={() => createRoom("bot")}
+                >
+                  Play vs Bot!
+                </Button>
+              </div>
             </div>
-          </>
+            <div className="flex-col gap-4 hidden xl:flex absolute">
+              <PlayerScoreBoard className=" w-72 h-[35vh]" />
+              <BotScoreBoard className=" w-72 h-[35vh]" />
+            </div>
+          </div>
         ) : (
           "Loading..."
         )}
@@ -45,7 +53,7 @@ function GamePage() {
     );
   else
     return (
-      <main className="flex flex-col h-[calc(100vh-80px-56px)] items-center">
+      <main className="flex flex-col h-[88vh] items-center">
         <p className="text-center mt-4 text-2xl">{message}</p>
         <GameBoard board={board} moveFn={move} myTurn={playing} />
         <Button className="w-fit m-4 text-xl" onClick={leaveRoom}>
