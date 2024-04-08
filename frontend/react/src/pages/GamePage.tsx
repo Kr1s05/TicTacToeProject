@@ -31,13 +31,13 @@ function GamePage() {
                   className="w-40 m-4 text-xl self-center"
                   onClick={() => createRoom("player")}
                 >
-                  Create Room!
+                  Създай стая!
                 </Button>
                 <Button
                   className="w-40 m-4 text-xl"
                   onClick={() => createRoom("bot")}
                 >
-                  Play vs Bot!
+                  Играй срещу бота!
                 </Button>
               </div>
             </div>
@@ -47,7 +47,7 @@ function GamePage() {
             </div>
           </div>
         ) : (
-          "Loading..."
+          "Зареждане..."
         )}
       </main>
     );

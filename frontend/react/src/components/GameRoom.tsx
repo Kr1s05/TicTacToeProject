@@ -10,7 +10,7 @@ function GameRoom(props: {
     <Card className="p-4 flex gap-2 mx-8">
       <div className="grow">
         <CardTitle>{props.name}</CardTitle>
-        <CardDescription>Player:{props.playerName}</CardDescription>
+        <CardDescription>Играч:{props.playerName}</CardDescription>
       </div>
       <Button
         className="text-2xl"
@@ -18,7 +18,7 @@ function GameRoom(props: {
           props.joinFn(props.id);
         }}
       >
-        Join
+        Присъединяване
       </Button>
     </Card>
   );

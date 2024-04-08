@@ -56,7 +56,7 @@ function RegisterForm() {
           name="username"
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Име</FormLabel>
               <FormControl>
                 <Input autoComplete="username" {...field} />
               </FormControl>
@@ -69,7 +69,7 @@ function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Имейл</FormLabel>
               <FormControl>
                 <Input autoComplete="email" {...field} />
               </FormControl>
@@ -82,7 +82,7 @@ function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem className="col-span-2 lg:col-span-1">
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Парола</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
@@ -95,7 +95,7 @@ function RegisterForm() {
           name="repeatPassword"
           render={({ field }) => (
             <FormItem className="col-span-2 lg:col-span-1">
-              <FormLabel>Confirm password</FormLabel>
+              <FormLabel>Потвърди паролата</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
@@ -107,7 +107,7 @@ function RegisterForm() {
           type="submit"
           className="w-1/2 mx-auto mt-2 font-bold text-lg col-span-2"
         >
-          Register
+          Регистрация
         </Button>
       </form>
     </Form>

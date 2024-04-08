@@ -37,7 +37,7 @@ export function UserNav(props: {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Button onClick={props.logoutCallback} className="w-1/2 ms-2">
-            Logout
+            Изход
           </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>

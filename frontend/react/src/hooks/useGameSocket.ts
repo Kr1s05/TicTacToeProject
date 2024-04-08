@@ -151,7 +151,7 @@ export function useRoomSocket() {
     setState({ ...state, error: "Error connecting to backend." });
 
   //functions for the buttons
-  const createRoom = (roomType:string) => {
+  const createRoom = (roomType: string) => {
     if (state.room) return;
     state.socket.emit("createRoom", roomType);
   };
@@ -178,22 +178,22 @@ export function useRoomSocket() {
     let message = "";
     switch (state.gameState) {
       case "win":
-        message = "You win!";
+        message = "Ти печелиш!";
         break;
       case "loss":
-        message = state.player2 + " wins!";
+        message = state.player2 + " печели!";
         break;
       case "draw":
-        message = "Draw.";
+        message = "Равенство.";
         break;
       case "wait":
-        message = "Waiting for other player.";
+        message = "Изчакване на втори играч.";
         break;
       case "play":
         message =
           state.playerChar == state.turn
-            ? "Your turn."
-            : state.player2 + "'s turn.";
+            ? "Ти си наход."
+            : state.player2 + "е на ход.";
     }
     setState((prevState) => ({
       ...prevState,

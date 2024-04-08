@@ -4,22 +4,22 @@ const registerFormSchema = z
   .object({
     username: z
       .string()
-      .min(1, { message: "Username is missing." })
-      .min(4, { message: "Username must be at least 4 characters long" })
-      .max(16, { message: "Username must be less than 16 characters long" }),
+      .min(1, { message: "Въведете име." })
+      .min(4, { message: "Името трябва да е поне 4 символа." })
+      .max(16, { message: "Името не трябва да превишава 16 символа." }),
     email: z
       .string()
-      .min(1, { message: "Email is missing." })
-      .email({ message: "Email is invalid." }),
+      .min(1, { message: "Въведете имейл." })
+      .email({ message: "Имейла е невалиден." }),
     password: z
       .string()
-      .min(1, { message: "Password is missing." })
-      .min(4, { message: "Password must be at least 4 characters long" })
-      .max(16, { message: "Password must be less than 16 characters long" }),
-    repeatPassword: z.string().min(1, { message: "Must confirm password." }),
+      .min(1, { message: "Въведете парола." })
+      .min(4, { message: "Паролата трябва да е поне 4 символа" })
+      .max(16, { message: "Паролата не трябва да превишава 16 символа." }),
+    repeatPassword: z.string().min(1, { message: "Потвърдете паролата." }),
   })
   .refine(({ password, repeatPassword }) => password === repeatPassword, {
-    message: "Passwords don't match.",
+    message: "Паролите не съвпадат.",
     path: ["repeatPassword"],
   });
 
