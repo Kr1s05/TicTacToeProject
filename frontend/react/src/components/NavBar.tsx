@@ -58,10 +58,16 @@ export function NavBar() {
             >
               Класация
             </Link>
-            <Button className="mt-4" variant="outline">
-              <Link to={"/login"}>Вход</Link>
-            </Button>
-            <Button className="mt-2">Регистрация</Button>
+            {!authenticated && (
+              <>
+                <Button className="mt-4" variant="outline">
+                  <Link to={"/login"}>Вход</Link>
+                </Button>
+                <Button className="mt-2">
+                  <Link to={"/register"}>Регистрация</Link>
+                </Button>
+              </>
+            )}
           </div>
         </SheetContent>
       </Sheet>
