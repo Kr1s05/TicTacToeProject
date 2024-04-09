@@ -7,13 +7,13 @@ import UserProvider from "./components/UserProvider";
 import ProtectedComponent from "./components/ProtectedComponent";
 import GamePage from "./pages/GamePage";
 import ScoreboardPage from "./pages/ScoreboardPage";
+import AboutPage from "./pages/AboutPage";
 
 function App() {
   return (
     <>
       <UserProvider>
         <Routes>
-          <Route path="/test"></Route>
           <Route path="/" Component={SiteLayout}>
             <Route path="/" Component={HomePage} element={""} />
             <Route
@@ -40,6 +40,7 @@ function App() {
                 <ProtectedComponent auth={true} element={<ScoreboardPage />} />
               }
             />
+            <Route path="about" Component={AboutPage} />
           </Route>
         </Routes>
       </UserProvider>
