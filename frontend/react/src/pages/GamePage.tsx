@@ -28,13 +28,13 @@ function GamePage() {
               <RoomList rooms={roomList} joinFn={joinRoom} />
               <div className="flex flex-row justify-center">
                 <Button
-                  className="w-40 m-4 text-xl self-center"
+                  className="w-48 m-4 text-xl self-center"
                   onClick={() => createRoom("player")}
                 >
                   Създай стая!
                 </Button>
                 <Button
-                  className="w-40 m-4 text-xl"
+                  className="w-48 m-4 text-xl"
                   onClick={() => createRoom("bot")}
                 >
                   Играй срещу бота!
@@ -42,8 +42,8 @@ function GamePage() {
               </div>
             </div>
             <div className="flex-col gap-4 hidden xl:flex absolute">
-              <PlayerScoreBoard className=" w-72 h-[35vh]" />
-              <BotScoreBoard className=" w-72 h-[35vh]" />
+              <PlayerScoreBoard className=" w-80 h-[35vh]" />
+              <BotScoreBoard className=" w-80 h-[35vh]" />
             </div>
           </div>
         ) : (

@@ -3,12 +3,12 @@ export function Info() {
     <div key="1" className="w-full py-6 space-y-6">
       <div className="container space-y-2 text-center px-4">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-          Tic-Tac-Toe
+          Морски шах
         </h1>
         <p className="mx-auto max-w-3xl text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-          Tic-tac-toe is a classic game known for its simplicity. It's a game
-          that's easy to learn, but challenging to master. Here's a guide to
-          help you get started.
+          Морският шах е класическа игра, известна със своята простота. Това е
+          игра, която е лесна за научаване, но предизвикателна за овладяване.
+          Ето едно ръководство, което ще ви помогне да започнете.
         </p>
       </div>
       <div className="container grid md:grid-cols-[200px_1fr] items-start gap-6 md:gap-12 lg:gap-24">
@@ -25,48 +25,47 @@ export function Info() {
         </div>
         <div className="grid grid-cols-1 items-start gap-1 text-gray-500 dark:text-gray-400">
           <div>
-            Player X starts the game by placing their mark in any of the 9
-            squares.
+            Играчът X започва играта, като поставя своя знак в някое от 9-те
+            квадратчета.
           </div>
           <div>
-            Player O then takes their turn, placing their mark in an empty
-            square.
+            След това играчът О поема своя ход, като поставя своя знак в празно
+            квадратче.
           </div>
           <div>
-            The game continues with players taking turns until one player gets 3
-            of their marks in a row (horizontally, vertically, or diagonally),
-            or all 9 squares are filled without a winner, resulting in a draw.
+            Играта продължава, като играчите се редуват, докато един от тях не
+            получи 3 свои знака подред (хоризонтално, вертикално или диагонално)
+            или докато всички 9 квадрата не бъдат запълнени без победител, което
+            води до равенство.
           </div>
         </div>
       </div>
       <div className="container grid items-start gap-6 md:grid-cols-2 md:gap-12 lg:gap-24">
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">
-            Tips and Strategies for Winning
-          </h2>
+          <h2 className="text-2xl font-bold">Печеливши стратегии и съвети</h2>
           <div className="space-y-4 text-gray-500 dark:text-gray-400">
             <p>
-              - Pay attention to your opponent's moves and block them from
-              getting three in a row.
+              - Обърнете внимание на ходовете на противника си и му попречете да
+              получи три поредни удара.
             </p>
             <p>
-              - Look for opportunities to create your own winning lines while
-              blocking your opponent.
+              - Търсете възможности за създаване на собствени печеливши линии,
+              докато блокирате противника.
             </p>
             <p>
-              - The center square is a strategic starting position as it
-              provides the most opportunities for creating winning lines.
+              - Централният квадрат е стратегическа начална позиция, тъй като
+              предоставя най-много възможности за създаване на печеливши линии.
             </p>
             <p>
-              - If your opponent takes a corner square, taking the center is a
-              good move to maintain control of the board.
+              - Ако противникът ви заеме ъглов квадрат, вземането на центъра е
+              добър ход, за да запазите контрола върху дъската.
             </p>
           </div>
         </div>
         <div>
-          <h3>Contact information:</h3>
+          <h3>Информация за връзка:</h3>
           <p className="pl-6">
-            Email: support@tictactoe-online.bg
+            Имейл: support@tictactoe-online.bg
             <p />
           </p>
         </div>
