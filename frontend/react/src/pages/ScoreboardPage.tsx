@@ -3,9 +3,9 @@ import PlayerScoreBoard from "@/components/PlayerScoreBoard";
 
 export default function ScoreboardPage() {
   return (
-    <main className="flex flex-col lg:flex-row justify-center h-[88vh] xl:gap-56  xl:p-48 lg:p-28 lg:gap-28 md:p-20 md:gap-16 sm:p-12 sm:gap-10">
-      <PlayerScoreBoard className=" text-xl h-fit" />
-      <BotScoreBoard className=" text-xl h-fit" />
+    <main className="flex grow flex-col justify-evenly items-center sm:flex-row">
+      <PlayerScoreBoard className=" text-xl h-[40vh] w-fit sm:h-[65vh]" />
+      <BotScoreBoard className=" text-xl h-[40vh] w-fit sm:h-[65vh]" />
     </main>
   );
 }

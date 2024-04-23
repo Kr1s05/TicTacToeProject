@@ -19,14 +19,14 @@ function GamePage() {
   } = useRoomSocket();
   if (!room)
     return (
-      <main className="flex flex-col h-[88vh]">
+      <main className="flex flex-col h-[85vh]">
         {error ? (
           error
         ) : roomList ? (
           <div className="flex flex-row h-full justify-between p-16 relative">
             <div className="flex flex-col grow">
               <RoomList rooms={roomList} joinFn={joinRoom} />
-              <div className="flex flex-row justify-center">
+              <div className="flex flex-col md:flex-row justify-center">
                 <Button
                   className="w-48 m-4 text-xl self-center"
                   onClick={() => createRoom("player")}
@@ -34,7 +34,7 @@ function GamePage() {
                   Създай стая!
                 </Button>
                 <Button
-                  className="w-48 m-4 text-xl"
+                  className="w-48 m-4 text-xl self-center"
                   onClick={() => createRoom("bot")}
                 >
                   Играй срещу бота!
