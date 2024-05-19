@@ -1,3 +1,0 @@
-move every message set to setMessage()
-keep the game state in frontend state (win/playing/draw)
-refactor gameRoom.ts on backend

@@ -7,7 +7,7 @@ function GameRoom(props: {
   joinFn: (id: string) => void;
 }) {
   return (
-    <Card className="p-4 flex gap-2 mx-8">
+    <Card className="p-4 flex flex-col sm:flex-row gap-2 mx-8">
       <div className="grow">
         <CardTitle>{props.name}</CardTitle>
         <CardDescription>Играч:{props.playerName}</CardDescription>

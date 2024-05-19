@@ -15,7 +15,7 @@ function GameBoard(props: {
             props.moveFn(index);
           }}
           disabled={char == "x" || char == "o" || !props.myTurn}
-          className="size-32 aspect-square border border-white rounded-sm"
+          className="size-24 sm:size-32 aspect-square border border-white rounded-sm"
         >
           {char ? char == "x" ? <X /> : <Circle /> : ""}
         </Button>
