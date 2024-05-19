@@ -192,8 +192,8 @@ export function useRoomSocket() {
       case "play":
         message =
           state.playerChar == state.turn
-            ? "Ти си наход."
-            : state.player2 + "е на ход.";
+            ? "Ти си на ход."
+            : state.player2 + " е на ход.";
     }
     setState((prevState) => ({
       ...prevState,
