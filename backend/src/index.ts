@@ -9,6 +9,7 @@ import { createServer } from "@/socket/socket";
 import { router as roomRouter } from "@/game/room/roomRouter";
 import { setupMessaging } from "./amqp/messageQueue";
 import { createClient } from "redis";
+import { router as BoardRouter } from "./scoreboard/boardRouter";
 
 const redisClient = await createClient({
   url: "redis://redis:6379",
@@ -16,7 +17,7 @@ const redisClient = await createClient({
 
 const app = Express();
 const server = http.createServer(app);
-sync();
+await sync();
 await setupMessaging();
 
 app.use(
@@ -33,6 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(userRouter);
 app.use("/rooms", roomRouter);
+app.use("/scoreboard", BoardRouter);
 
 server.listen(3000, () => {
   console.log("server started on port 3000");

@@ -84,7 +84,7 @@ function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem className={displayClass ? "hidden" : "" + ""}>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Име</FormLabel>
               <FormControl>
                 <Input autoComplete="username" {...field} />
               </FormControl>
@@ -97,7 +97,7 @@ function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem className={displayClass ? "" : "hidden" + ""}>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Имейл</FormLabel>
               <FormControl>
                 <Input autoComplete="email" {...field} />
               </FormControl>
@@ -110,7 +110,7 @@ function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem className="">
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Парола</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="password" {...field} />
               </FormControl>
@@ -119,7 +119,7 @@ function LoginForm() {
           )}
         />
         <Button type="submit" className="w-1/2 mx-auto mt-2 font-bold text-lg">
-          Login
+          Вход
         </Button>
       </form>
     </Form>

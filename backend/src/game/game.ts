@@ -3,6 +3,7 @@ import { User, getRoom, resetRoom } from "./room/gameRoom";
 import { getGameState, isValidMove } from "./logic/gameLogic";
 import { setTimeout } from "timers/promises";
 import { BotMessage, setupBotMessaging } from "./botMessaging";
+import { incrementScore } from "../scoreboard/incrementScores";
 let io: Server;
 export let sendBotMove: (msg: BotMessage) => void;
 export async function setup(ioInstance: Server) {
@@ -36,24 +37,40 @@ export async function makeMove(
     case "playing":
       return;
     case "x":
-      if (room.players.player2.username == "Bot")
+      if (room.players.player2.username == "Bot") {
         sendWin(
           room.players.player1.playerChar == "x"
             ? room.players.player1.username
             : "Bot",
           room.roomId
         );
-      else sendWin(room.players.player1.username, room.roomId);
+        incrementScore(
+          room.players.player1.username,
+          room.players.player1.playerChar == "x" ? "bot_W" : "bot_L"
+        );
+      } else {
+        sendWin(room.players.player1.username, room.roomId);
+        incrementScore(room.players.player2.username, "pvp_L");
+        incrementScore(room.players.player1.username, "pvp_W");
+      }
       break;
     case "o":
-      if (room.players.player2.username == "Bot")
+      if (room.players.player2.username == "Bot") {
         sendWin(
           room.players.player1.playerChar == "o"
             ? room.players.player1.username
             : "Bot",
           room.roomId
         );
-      else sendWin(room.players.player2.username, room.roomId);
+        incrementScore(
+          room.players.player1.username,
+          room.players.player1.playerChar == "o" ? "bot_W" : "bot_L"
+        );
+      } else {
+        sendWin(room.players.player2.username, room.roomId);
+        incrementScore(room.players.player1.username, "pvp_L");
+        incrementScore(room.players.player2.username, "pvp_W");
+      }
       break;
     case "draw":
       sendDraw(room.roomId);

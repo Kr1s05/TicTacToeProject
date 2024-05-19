@@ -6,6 +6,8 @@ import RegisterPage from "./pages/RegisterPage";
 import UserProvider from "./components/UserProvider";
 import ProtectedComponent from "./components/ProtectedComponent";
 import GamePage from "./pages/GamePage";
+import ScoreboardPage from "./pages/ScoreboardPage";
+import AboutPage from "./pages/AboutPage";
 
 function App() {
   return (
@@ -32,6 +34,13 @@ function App() {
                 <ProtectedComponent auth={true} element={<GamePage />} />
               }
             />
+            <Route
+              path="scoreboard"
+              element={
+                <ProtectedComponent auth={true} element={<ScoreboardPage />} />
+              }
+            />
+            <Route path="about" Component={AboutPage} />
           </Route>
         </Routes>
       </UserProvider>
