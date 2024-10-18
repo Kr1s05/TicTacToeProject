@@ -1,16 +1,21 @@
+# Multiplayer Tic-Tac-Toe Web App
 
-# Multiplayer Tic-Tac-Toe web app
-
-This project is a web application providing a multiplayer (1v1) game of tic-tac-toe.
-
-
+This project is a web application providing a multiplayer (1v1) game of Tic-Tac-Toe.
 
 ## Documentation
 
+The project follows a **microservices architecture**. It consists of 6 components:
 
-The project follows a microservices architecture. It consists of 6 components: A backend application made with express.js managing authentication, sessions, game rooms and the game flow. A frontend application made with react, connecting to the backend with REST and websocket. A bot application written in go using a mini-max algorithm. Connection between the backend and the bot happens trough a message queue. User data is stored in a relational database. Redis acts as as a session store for the backend. 
+1. **Backend Application**: Built with Express.js, this handles authentication, sessions, game rooms, and the game flow.
+2. **Frontend Application**: Created using React, this connects to the backend via REST and WebSocket.
+3. **Bot Application**: Written in Go, this implements a mini-max algorithm to play against users. The connection between the backend and the bot happens through a message queue.
+4. **Relational Database**: Used to store user data.
+5. **Redis**: Acts as a session store for the backend.
+6. **Message queue**: Provides connection between the bot and the backend.
+
 ## Deployment
 
-Deployment of the project is done using docker and docker-compose. There are 2 profiles: dev and production. They differ only in the frontend server to provide a "hot-reload" functionality to developers. To deploy the application run the docker-compose command in the projects root while setting the profile.
+Deployment is managed using **Docker** and **Docker Compose**. There are two profiles: `dev` and `production`. The only difference is that the `dev` profile provides a "hot-reload" feature for frontend development.
 
-    docker compose --profile production up
+To deploy the application, run the `docker-compose` command in the project's root directory, setting the appropriate profile.
+
